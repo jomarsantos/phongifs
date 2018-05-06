@@ -1,0 +1,12 @@
+version: "2"
+services:
+  app:
+    build: .
+    command: npm run dev
+    container_name: foundation
+    ports:
+      - "3001:3000"
+    restart: always
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
