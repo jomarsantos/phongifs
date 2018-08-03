@@ -3,7 +3,7 @@ services:
   app:
     build: .
     command: npm run dev
-    container_name: foundation
+    container_name: phongifs
     ports:
       - "3001:3000"
     restart: always

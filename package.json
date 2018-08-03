@@ -1,5 +1,5 @@
 {
-  "name": "foundation",
+  "name": "phongifs",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -10,15 +10,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jomarsantos/foundation.git"
+    "url": "git+https://github.com/jomarsantos/phongifs.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/jomarsantos/foundation/issues"
+    "url": "https://github.com/jomarsantos/phongifs/issues"
   },
-  "homepage": "https://github.com/jomarsantos/foundation#readme",
+  "homepage": "https://github.com/jomarsantos/phongifs#readme",
   "dependencies": {
     "babel-core": "^6.26.3",
     "babel-loader": "^7.1.4",

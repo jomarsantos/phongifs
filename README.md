@@ -1,5 +1,5 @@
-# foundation-react
-Boiler plate for a React application
+# phongifs
+Like Phonics but With Gifs
 
 ## Setup via Docker (Suggested)
 - Make sure you have Docker installed
