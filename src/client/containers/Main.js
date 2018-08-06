@@ -10,47 +10,28 @@ class Main extends Component {
 
     this.state = {
       rawSentence: '<ice cream> was orange',
+      sentences: [],
+      completedSentences: {},
       sentence: [],
-      numberOfAnswers: false,
       gifs: {},
       input: {},
       submitted: false
     };
 
+    this.setNextSentence = this.setNextSentence.bind(this);
     this.updateInputValue = this.updateInputValue.bind(this);
     this.checkAnswers = this.checkAnswers.bind(this);
   }
 
   componentDidMount() {
-    let sentence = this.parseSentenceAndAnswers(this.state.rawSentence);
-    this.setState({sentence: sentence});
-
-    let answers = sentence.filter(segment => segment.answer);
-    this.setState({numberOfAnswers: answers.length});
-
-    sentence.forEach((segment, index) => {
-      if (segment.answer) {
-        fetch('https://api.giphy.com/v1/stickers/translate?api_key=dyifQG9fALzqJM17T37Di8ifZ6nM5aek&s=' + segment.value).then(
-          response => response.json()
-        ).then(json => {
-          this.setState({
-            gifs: {
-              ...this.state.gifs,
-              [index]: json.data.images.fixed_width_small.url
-            }
-          })
-        });
-      }
+    fetch('/sentences.json').then(response => response.json()).then(json => {
+      this.setState({
+        sentences: json
+      }, this.setNextSentence);
     });
   }
 
   render() {
-    if (!this.state.numberOfAnswers) {
-      return (<div>
-        loading
-      </div>);
-    }
-
     // Focus on the first answer for input
     let focus = true;
     let segmentElements = this.state.sentence.map((segment, index) => {
@@ -83,6 +64,40 @@ class Main extends Component {
   /****************************************
 	Helpers
 	****************************************/
+
+  // Sets up next sentences
+  setNextSentence() {
+    // TODO: check if all questions have been answered
+
+    let randomIndex = -1;
+    do {
+      randomIndex = Math.floor(Math.random() * Math.floor(this.state.sentences.length));;
+    } while (this.state.completedSentences.hasOwnProperty(randomIndex));
+    this.setState({
+      completedSentences: {
+        ...this.state.completedSentences,
+        [randomIndex]: true
+      }
+    })
+
+    let sentence = this.parseSentenceAndAnswers(this.state.sentences[randomIndex].sentence);
+    this.setState({sentence: sentence});
+
+    sentence.forEach((segment, index) => {
+      if (segment.answer) {
+        fetch('https://api.giphy.com/v1/stickers/translate?api_key=dyifQG9fALzqJM17T37Di8ifZ6nM5aek&s=' + segment.value).then(
+          response => response.json()
+        ).then(json => {
+          this.setState({
+            gifs: {
+              ...this.state.gifs,
+              [index]: json.data.images.fixed_width_small.url
+            }
+          });
+        });
+      }
+    });
+  }
 
   // Parses answers from the sentence provided
   parseSentenceAndAnswers(rawSentence) {
