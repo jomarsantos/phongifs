@@ -13,7 +13,8 @@ class Main extends Component {
       sentence: [],
       numberOfAnswers: false,
       gifs: {},
-      input: {}
+      input: {},
+			submitted: false
     };
 
     this.updateInputValue = this.updateInputValue.bind(this);
@@ -30,7 +31,9 @@ class Main extends Component {
 
     sentence.forEach((segment, index) => {
       if (segment.answer) {
-        fetch('https://api.giphy.com/v1/stickers/translate?api_key=dyifQG9fALzqJM17T37Di8ifZ6nM5aek&s=' + segment.value).then(response => response.json()).then(json => {
+        fetch('https://api.giphy.com/v1/stickers/translate?api_key=dyifQG9fALzqJM17T37Di8ifZ6nM5aek&s=' + segment.value).then(
+          response => response.json()
+        ).then(json => {
           this.setState({
             gifs: {
               ...this.state.gifs,
@@ -53,7 +56,15 @@ class Main extends Component {
     let focus = true;
     let segmentElements = this.state.sentence.map((segment, index) => {
       if (segment.answer) {
-        let element = <Answer key={index} index={index} gif={this.state.gifs[index]} focus={focus} handler={this.updateInputValue}/>;
+        let element = <Answer
+          key={index}
+          index={index}
+          gif={this.state.gifs[index]}
+					answer={segment.value}
+          correct={segment.correct}
+					submitted={this.state.submitted}
+          focus={focus}
+          handler={this.updateInputValue}/>;
         focus = false;
         return element;
       } else {
@@ -61,16 +72,18 @@ class Main extends Component {
       }
     });
 
-    return (<div>
-      {segmentElements}
-      <button onClick={() => this.checkAnswers()}>Submit</button>
-      <button>Next</button>
-    </div>);
+    return (
+      <div>
+        {segmentElements}
+        <button onClick={() => this.checkAnswers()} disabled={this.state.submitted}>Submit</button>
+        <button>Next</button>
+      </div>
+    );
   }
 
-  //////////////////////
-  // Helpers
-  //////////////////////
+  /****************************************
+	Helpers
+	****************************************/
 
   // Parses answers from the sentence provided
   parseSentenceAndAnswers(rawSentence) {
@@ -91,9 +104,9 @@ class Main extends Component {
         // Start of a new answer
         processingAnswer = true;
       } else if (!processingAnswer && i === (rawSentence.length - 1)) {
-				// Last character of a sentence segment
-				ongoingSentenceSegment.push(char);
-				if (ongoingSentenceSegment.length !== 0) {
+        // Last character of a sentence segment
+        ongoingSentenceSegment.push(char);
+        if (ongoingSentenceSegment.length !== 0) {
           let sentenceSegment = ongoingSentenceSegment.join('');
           sentence.push({value: sentenceSegment, answer: false});
           ongoingSentenceSegment = [];
@@ -102,7 +115,7 @@ class Main extends Component {
         // Finished current answer
         let answer = ongoingAnswer.join('');
         answer = answer.trim();
-        sentence.push({value: answer, answer: true});
+        sentence.push({value: answer, answer: true, correct: null});
         ongoingAnswer = [];
         processingAnswer = false;
       } else if (processingAnswer) {
@@ -135,19 +148,17 @@ class Main extends Component {
         correct = true;
       }
 
-			let sentence = JSON.parse(JSON.stringify(this.state.sentence));
-			sentence[index].correct = correct;
+      let sentence = JSON.parse(JSON.stringify(this.state.sentence));
+      sentence[index].correct = correct;
 
-      this.setState({
-      	sentence: sentence
-      });
+      this.setState({sentence: sentence, submitted: true});
     });
   }
 }
 
-//////////////////////
-// Mappings
-//////////////////////
+/****************************************
+Mappings
+****************************************/
 
 const mapStateToProps = (state) => {
   return {};
