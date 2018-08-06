@@ -10,7 +10,7 @@ class Main extends Component {
     this.state = {
       rawSentence: '*cat* meowed at the *bird*',
       sentence: [],
-			numberOfAnswers: false,
+      numberOfAnswers: false,
       gifs: {}
     };
   }
@@ -19,24 +19,40 @@ class Main extends Component {
     let sentence = this.parseSentenceAndAnswers(this.state.rawSentence);
     this.setState({sentence: sentence});
 
-		let answers = sentence.filter(segment => segment.answer);
-		this.setState({numberOfAnswers: answers.length});
+    let answers = sentence.filter(segment => segment.answer);
+    this.setState({numberOfAnswers: answers.length});
 
-    answers.forEach((answer, index) => {
-        fetch('https://api.giphy.com/v1/stickers/translate?api_key=dyifQG9fALzqJM17T37Di8ifZ6nM5aek&s=' + answer.value).then(response => response.json()).then(json => {
-          this.setState({
-            gifs: {
-              ...this.state.gifs,
-              [index]: json.data.embed_url
-            }
-          })
-        });
+    sentence.forEach((segment, index) => {
+			if (segment.answer) {
+	      fetch('https://api.giphy.com/v1/stickers/translate?api_key=dyifQG9fALzqJM17T37Di8ifZ6nM5aek&s=' + segment.value).then(response => response.json()).then(json => {
+					this.setState({
+	          gifs: {
+	            ...this.state.gifs,
+	            [index]: json.data.images.fixed_width_small.url
+	          }
+	        })
+	      });
+			}
     });
   }
 
   render() {
-    return (<div>
-      {this.state.rawSentence}
+    if (!this.state.numberOfAnswers) {
+      return (<div>
+        loading
+      </div>);
+    }
+
+    let segmentElements = this.state.sentence.map((segment, index) => {
+			if (segment.answer) {
+				return this.createAnswerElement(index, segment.value, this.state.gifs[index])
+			} else {
+				return this.createSentenceElement(index, segment.value)
+			}
+		});
+
+		return (<div>
+      {segmentElements}
     </div>);
   }
 
@@ -80,6 +96,22 @@ class Main extends Component {
 
     return sentence;
   }
+
+	createSentenceElement(index, answer) {
+		return (
+			<div id={'segment-'+index} key={'segment-'+index}>
+				{answer}
+			</div>
+		);
+	}
+
+	createAnswerElement(index, answer, gif) {
+		return (
+			<div id={'segment-'+index} key={'segment-'+index}>
+				<img src={gif}></img>
+			</div>
+		);
+	}
 
 }
 
