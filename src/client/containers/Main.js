@@ -9,7 +9,7 @@ class Main extends Component {
     super(props);
 
     this.state = {
-      rawSentence: '*cat* meowed at the *bird*',
+      rawSentence: 'the *succulent* grew tall',
       sentence: [],
       numberOfAnswers: false,
       gifs: {},
@@ -90,6 +90,14 @@ class Main extends Component {
         }
         // Start of a new answer
         processingAnswer = true;
+      } else if (!processingAnswer && i === (rawSentence.length - 1)) {
+				// Last character of a sentence segment
+				ongoingSentenceSegment.push(char);
+				if (ongoingSentenceSegment.length !== 0) {
+          let sentenceSegment = ongoingSentenceSegment.join('');
+          sentence.push({value: sentenceSegment, answer: false});
+          ongoingSentenceSegment = [];
+        }
       } else if (processingAnswer && char === '*') {
         // Finished current answer
         let answer = ongoingAnswer.join('');
