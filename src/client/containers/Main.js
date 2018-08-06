@@ -12,8 +12,11 @@ class Main extends Component {
       rawSentence: '*cat* meowed at the *bird*',
       sentence: [],
       numberOfAnswers: false,
-      gifs: {}
+      gifs: {},
+      input: []
     };
+
+		this.updateInputValue = this.updateInputValue.bind(this);
   }
 
   componentDidMount() {
@@ -46,7 +49,7 @@ class Main extends Component {
 
     let segmentElements = this.state.sentence.map((segment, index) => {
       if (segment.answer) {
-        return <Answer key={index} index={index} gif={this.state.gifs[index]}/>;
+        return <Answer key={index} index={index} gif={this.state.gifs[index]} handler={this.updateInputValue}/>;
       } else {
         return <Segment key={index} index={index} segment={segment.value}/>;
       }
@@ -96,6 +99,15 @@ class Main extends Component {
     }
 
     return sentence;
+  }
+
+  updateInputValue(index, value) {
+    this.setState({
+      input: {
+        ...this.state.input,
+        [index]: value
+      }
+    })
   }
 }
 
