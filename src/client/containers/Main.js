@@ -38,12 +38,18 @@ class Main extends Component {
     // Focus on the first answer for input
     let focus = true;
     let segmentElements = this.state.sentence.map((segment, index) => {
+			let value = ''
+			if (this.state.input.hasOwnProperty(index)) {
+				value = this.state.input[index]
+			}
+
       if (segment.answer) {
         let element = <Answer
           key={index}
           index={index}
           gif={this.state.gifs[index]}
           answer={segment.value}
+					value={value}
           correct={segment.correct}
           submitted={this.state.submitted}
           focus={focus}
@@ -70,6 +76,11 @@ class Main extends Component {
 
   // Sets up next sentences
   setNextSentence() {
+		this.setState({
+      input: {},
+			submitted: false
+    });
+
 		// Completed all sentences
 		if (Object.keys(this.state.completedSentences).length == this.state.sentences.length) {
 			// TODO: set state for "completedAllSentences == true"

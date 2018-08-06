@@ -24,6 +24,7 @@ class Answer extends Component {
             this.input = input;
           }}
           id={'answer-' + this.props.index}
+          value={this.props.value}
           onChange={e => this.props.handler(this.props.index, e.target.value)}
           readOnly={this.props.submitted}></input>
         {correct}
