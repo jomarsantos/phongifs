@@ -13,10 +13,12 @@ class Main extends Component {
       sentence: [],
       numberOfAnswers: false,
       gifs: {},
-      input: []
+      input: {}
     };
 
-		this.updateInputValue = this.updateInputValue.bind(this);
+    this.updateInputValue = this.updateInputValue.bind(this);
+    this.checkAnswers = this.checkAnswers.bind(this);
+
   }
 
   componentDidMount() {
@@ -47,9 +49,13 @@ class Main extends Component {
       </div>);
     }
 
+    // Focus on the first answer for input
+    let focus = true;
     let segmentElements = this.state.sentence.map((segment, index) => {
       if (segment.answer) {
-        return <Answer key={index} index={index} gif={this.state.gifs[index]} handler={this.updateInputValue}/>;
+        let element = <Answer key={index} index={index} gif={this.state.gifs[index]} focus={focus} handler={this.updateInputValue}/>;
+        focus = false;
+        return element;
       } else {
         return <Segment key={index} index={index} segment={segment.value}/>;
       }
@@ -57,6 +63,8 @@ class Main extends Component {
 
     return (<div>
       {segmentElements}
+      <button onClick={() => this.checkAnswers()}>Submit</button>
+      <button>Next</button>
     </div>);
   }
 
@@ -101,6 +109,7 @@ class Main extends Component {
     return sentence;
   }
 
+  // Handler for answers values inputted
   updateInputValue(index, value) {
     this.setState({
       input: {
@@ -109,7 +118,28 @@ class Main extends Component {
       }
     })
   }
+
+  // Check answers on submission
+  checkAnswers() {
+    Object.keys(this.state.input).forEach(index => {
+      let correct = false;
+      if (this.state.input[index] === this.state.sentence[index].value) {
+        correct = true;
+      }
+
+			let sentence = JSON.parse(JSON.stringify(this.state.sentence));
+			sentence[index].correct = correct;
+
+      this.setState({
+      	sentence: sentence
+      });
+    });
+  }
 }
+
+//////////////////////
+// Mappings
+//////////////////////
 
 const mapStateToProps = (state) => {
   return {};
