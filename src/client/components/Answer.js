@@ -12,7 +12,7 @@ class Answer extends Component {
     let readOnly = false;
     if (this.props.correct) {
       correct = 'correct'
-    } else if (this.props.correct === false) {
+    } else if (this.props.submitted) {
       correct = this.props.answer
     }
 

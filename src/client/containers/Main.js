@@ -9,17 +9,16 @@ class Main extends Component {
     super(props);
 
     this.state = {
-      rawSentence: 'the *succulent* grew tall',
+      rawSentence: 'the *bread* was burnt',
       sentence: [],
       numberOfAnswers: false,
       gifs: {},
       input: {},
-			submitted: false
+      submitted: false
     };
 
     this.updateInputValue = this.updateInputValue.bind(this);
     this.checkAnswers = this.checkAnswers.bind(this);
-
   }
 
   componentDidMount() {
@@ -60,9 +59,9 @@ class Main extends Component {
           key={index}
           index={index}
           gif={this.state.gifs[index]}
-					answer={segment.value}
+          answer={segment.value}
           correct={segment.correct}
-					submitted={this.state.submitted}
+          submitted={this.state.submitted}
           focus={focus}
           handler={this.updateInputValue}/>;
         focus = false;
@@ -151,8 +150,9 @@ class Main extends Component {
       let sentence = JSON.parse(JSON.stringify(this.state.sentence));
       sentence[index].correct = correct;
 
-      this.setState({sentence: sentence, submitted: true});
+      this.setState({sentence: sentence});
     });
+		this.setState({submitted: true});
   }
 }
 
