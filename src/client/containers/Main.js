@@ -9,13 +9,16 @@ class Main extends Component {
     super(props);
 
     this.state = {
-      rawSentence: '<ice cream> was orange',
-      sentences: [],
-      completedSentences: {},
-      sentence: [],
-      gifs: {},
-      input: {},
-      submitted: false
+      sentences: [], // Bank of sentences
+      completedSentences: {}, // Ongoing list of completed sentences
+
+      sentence: [], // Current sentence broken down
+      gifs: {}, // Gifs for the current sentence
+
+      input: {}, // Input from the user
+      submitted: false, // Flag that user has submitted their guesses
+			score: 0, // Score of the user
+			max: 0 // Max possible score so far
     };
 
     this.setNextSentence = this.setNextSentence.bind(this);
@@ -56,7 +59,7 @@ class Main extends Component {
       <div>
         {segmentElements}
         <button onClick={() => this.checkAnswers()} disabled={this.state.submitted}>Submit</button>
-        <button>Next</button>
+				<button onClick={() => this.setNextSentence()}>Next</button>
       </div>
     );
   }
@@ -67,7 +70,11 @@ class Main extends Component {
 
   // Sets up next sentences
   setNextSentence() {
-    // TODO: check if all questions have been answered
+		// Completed all sentences
+		if (Object.keys(this.state.completedSentences).length == this.state.sentences.length) {
+			// TODO: set state for "completedAllSentences == true"
+			return false;
+		}
 
     let randomIndex = -1;
     do {
@@ -130,18 +137,16 @@ class Main extends Component {
 
   // Check answers on submission
   checkAnswers() {
+		let sentence = JSON.parse(JSON.stringify(this.state.sentence));
     Object.keys(this.state.input).forEach(index => {
       let correct = false;
       if (this.state.input[index] === this.state.sentence[index].value) {
         correct = true;
       }
 
-      let sentence = JSON.parse(JSON.stringify(this.state.sentence));
       sentence[index].correct = correct;
-
-      this.setState({sentence: sentence});
     });
-    this.setState({submitted: true});
+    this.setState({sentence: sentence, submitted: true});
   }
 }
 
