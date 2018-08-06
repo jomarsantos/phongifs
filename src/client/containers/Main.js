@@ -1,7 +1,8 @@
 import React, {Component} from 'react';
 import {connect} from 'react-redux'
 import {testFetchAction, testAction} from '../actions/test';
-import TestComponent from '../components/TestComponent';
+import Answer from '../components/Answer';
+import Segment from '../components/Segment';
 
 class Main extends Component {
   constructor(props) {
@@ -23,16 +24,16 @@ class Main extends Component {
     this.setState({numberOfAnswers: answers.length});
 
     sentence.forEach((segment, index) => {
-			if (segment.answer) {
-	      fetch('https://api.giphy.com/v1/stickers/translate?api_key=dyifQG9fALzqJM17T37Di8ifZ6nM5aek&s=' + segment.value).then(response => response.json()).then(json => {
-					this.setState({
-	          gifs: {
-	            ...this.state.gifs,
-	            [index]: json.data.images.fixed_width_small.url
-	          }
-	        })
-	      });
-			}
+      if (segment.answer) {
+        fetch('https://api.giphy.com/v1/stickers/translate?api_key=dyifQG9fALzqJM17T37Di8ifZ6nM5aek&s=' + segment.value).then(response => response.json()).then(json => {
+          this.setState({
+            gifs: {
+              ...this.state.gifs,
+              [index]: json.data.images.fixed_width_small.url
+            }
+          })
+        });
+      }
     });
   }
 
@@ -44,14 +45,14 @@ class Main extends Component {
     }
 
     let segmentElements = this.state.sentence.map((segment, index) => {
-			if (segment.answer) {
-				return this.createAnswerElement(index, segment.value, this.state.gifs[index])
-			} else {
-				return this.createSentenceElement(index, segment.value)
-			}
-		});
+      if (segment.answer) {
+        return <Answer key={index} index={index} gif={this.state.gifs[index]}/>;
+      } else {
+        return <Segment key={index} index={index} segment={segment.value}/>;
+      }
+    });
 
-		return (<div>
+    return (<div>
       {segmentElements}
     </div>);
   }
@@ -96,23 +97,6 @@ class Main extends Component {
 
     return sentence;
   }
-
-	createSentenceElement(index, answer) {
-		return (
-			<div id={'segment-'+index} key={'segment-'+index}>
-				{answer}
-			</div>
-		);
-	}
-
-	createAnswerElement(index, answer, gif) {
-		return (
-			<div id={'segment-'+index} key={'segment-'+index}>
-				<img src={gif}></img>
-			</div>
-		);
-	}
-
 }
 
 const mapStateToProps = (state) => {
