@@ -1,0 +1,4 @@
+The *cat* meowed at the *bird*.
+It looks like it will *rain* today.
+Eat the *carrot*.
+The *ice cream* was melting.

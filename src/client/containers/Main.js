@@ -9,7 +9,7 @@ class Main extends Component {
     super(props);
 
     this.state = {
-      rawSentence: 'the *bread* was burnt',
+      rawSentence: '<ice cream> was orange',
       sentence: [],
       numberOfAnswers: false,
       gifs: {},
@@ -87,44 +87,18 @@ class Main extends Component {
   // Parses answers from the sentence provided
   parseSentenceAndAnswers(rawSentence) {
     let sentence = [];
-    let ongoingAnswer = [];
-    let ongoingSentenceSegment = [];
-    let processingAnswer = false;
-    for (let i = 0; i < rawSentence.length; i++) {
-      let char = rawSentence.charAt(i);
 
-      if (!processingAnswer && char === '*') {
-        // End of a sentence segment
-        if (ongoingSentenceSegment.length !== 0) {
-          let sentenceSegment = ongoingSentenceSegment.join('');
-          sentence.push({value: sentenceSegment, answer: false});
-          ongoingSentenceSegment = [];
+    let splitByEndParts = rawSentence.split('>');
+    splitByEndParts.forEach(splitByEndPart => {
+      if (splitByEndPart.trim() !== '') {
+        let parts = splitByEndPart.split('<');
+        sentence.push({value: parts[0], answer: false});
+
+        if (parts.length > 1) {
+          sentence.push({value: parts[1], answer: true, correct: null});
         }
-        // Start of a new answer
-        processingAnswer = true;
-      } else if (!processingAnswer && i === (rawSentence.length - 1)) {
-        // Last character of a sentence segment
-        ongoingSentenceSegment.push(char);
-        if (ongoingSentenceSegment.length !== 0) {
-          let sentenceSegment = ongoingSentenceSegment.join('');
-          sentence.push({value: sentenceSegment, answer: false});
-          ongoingSentenceSegment = [];
-        }
-      } else if (processingAnswer && char === '*') {
-        // Finished current answer
-        let answer = ongoingAnswer.join('');
-        answer = answer.trim();
-        sentence.push({value: answer, answer: true, correct: null});
-        ongoingAnswer = [];
-        processingAnswer = false;
-      } else if (processingAnswer) {
-        // Add to current answer
-        ongoingAnswer.push(char);
-      } else {
-        // Add to sentence segment
-        ongoingSentenceSegment.push(char);
       }
-    }
+    });
 
     return sentence;
   }
@@ -152,7 +126,7 @@ class Main extends Component {
 
       this.setState({sentence: sentence});
     });
-		this.setState({submitted: true});
+    this.setState({submitted: true});
   }
 }
 
