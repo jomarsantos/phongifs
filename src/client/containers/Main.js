@@ -17,8 +17,8 @@ class Main extends Component {
 
       input: {}, // Input from the user
       submitted: false, // Flag that user has submitted their guesses
-			score: 0, // Score of the user
-			max: 0 // Max possible score so far
+      score: 0, // Score of the user
+      maxScore: 0 // Max possible score so far
     };
 
     this.setNextSentence = this.setNextSentence.bind(this);
@@ -38,10 +38,10 @@ class Main extends Component {
     // Focus on the first answer for input
     let focus = true;
     let segmentElements = this.state.sentence.map((segment, index) => {
-			let value = ''
-			if (this.state.input.hasOwnProperty(index)) {
-				value = this.state.input[index]
-			}
+      let value = ''
+      if (this.state.input.hasOwnProperty(index)) {
+        value = this.state.input[index]
+      }
 
       if (segment.answer) {
         let element = <Answer
@@ -49,7 +49,7 @@ class Main extends Component {
           index={index}
           gif={this.state.gifs[index]}
           answer={segment.value}
-					value={value}
+          value={value}
           correct={segment.correct}
           submitted={this.state.submitted}
           focus={focus}
@@ -65,7 +65,10 @@ class Main extends Component {
       <div>
         {segmentElements}
         <button onClick={() => this.checkAnswers()} disabled={this.state.submitted}>Submit</button>
-				<button onClick={() => this.setNextSentence()}>Next</button>
+        <button onClick={() => this.setNextSentence()}>Next</button>
+				<div>
+					<p>Score: {this.state.score}/{this.state.maxScore}</p>
+				</div>
       </div>
     );
   }
@@ -76,16 +79,13 @@ class Main extends Component {
 
   // Sets up next sentences
   setNextSentence() {
-		this.setState({
-      input: {},
-			submitted: false
-    });
+    this.setState({input: {}, submitted: false});
 
-		// Completed all sentences
-		if (Object.keys(this.state.completedSentences).length == this.state.sentences.length) {
-			// TODO: set state for "completedAllSentences == true"
-			return false;
-		}
+    // Completed all sentences
+    if (Object.keys(this.state.completedSentences).length == this.state.sentences.length) {
+      // TODO: set state for "completedAllSentences == true"
+      return false;
+    }
 
     let randomIndex = -1;
     do {
@@ -148,16 +148,28 @@ class Main extends Component {
 
   // Check answers on submission
   checkAnswers() {
-		let sentence = JSON.parse(JSON.stringify(this.state.sentence));
+    let points = 0;
+    let sentence = JSON.parse(JSON.stringify(this.state.sentence));
     Object.keys(this.state.input).forEach(index => {
       let correct = false;
       if (this.state.input[index] === this.state.sentence[index].value) {
         correct = true;
+        points++;
       }
 
       sentence[index].correct = correct;
     });
-    this.setState({sentence: sentence, submitted: true});
+
+		let answers = this.state.sentence.filter(segment => {
+			return segment.answer
+		});
+
+    this.setState({
+      sentence: sentence,
+      submitted: true,
+      score: this.state.score + points,
+			maxScore: this.state.maxScore + answers.length
+    });
   }
 }
 
