@@ -8,48 +8,35 @@ class Main extends Component {
     super(props);
 
     this.state = {
-      currSentence: 'the *cat* meowed at the *bird*',
-      answers: [],
+      rawSentence: '*cat* meowed at the *bird*',
+      sentence: [],
+			numberOfAnswers: false,
       gifs: {}
     };
   }
 
   componentDidMount() {
-    let answers = this.getAnswers(this.state.currSentence);
-    this.setState({answers: answers});
+    let sentence = this.parseSentenceAndAnswers(this.state.rawSentence);
+    this.setState({sentence: sentence});
 
-    answers.forEach((value, index) => {
-      fetch('https://api.giphy.com/v1/stickers/translate?api_key=dyifQG9fALzqJM17T37Di8ifZ6nM5aek&s='+value).then(response => response.json()).then(json => {
-				this.setState({
-						gifs: {
-								...this.state.gifs,
-								[index]: json.data.embed_url
-						}
-				})
-      });
+		let answers = sentence.filter(segment => segment.answer);
+		this.setState({numberOfAnswers: answers.length});
+
+    answers.forEach((answer, index) => {
+        fetch('https://api.giphy.com/v1/stickers/translate?api_key=dyifQG9fALzqJM17T37Di8ifZ6nM5aek&s=' + answer.value).then(response => response.json()).then(json => {
+          this.setState({
+            gifs: {
+              ...this.state.gifs,
+              [index]: json.data.embed_url
+            }
+          })
+        });
     });
   }
 
-  // test() {
-  //   if (this.props.testField == 'OFF') {
-  //     this.props.testFetchAction();
-  //   } else {
-  //     this.props.testAction('OFF');
-  //   }
-  // }
-
-  // render() {
-  //   return (<div>
-  //     <TestComponent testProp={this.props.testField}/>
-  //     <button onClick={() => {
-  //         this.test()
-  //       }}>TOGGLE</button>
-  //   </div>);
-  // }
-
-	render() {
+  render() {
     return (<div>
-      {this.state.currSentence}
+      {this.state.rawSentence}
     </div>);
   }
 
@@ -58,30 +45,40 @@ class Main extends Component {
   //////////////////////
 
   // Parses answers from the sentence provided
-  getAnswers(sentence) {
-    let answers = [];
+  parseSentenceAndAnswers(rawSentence) {
+    let sentence = [];
     let ongoingAnswer = [];
+    let ongoingSentenceSegment = [];
     let processingAnswer = false;
-    for (let i = 0; i < sentence.length; i++) {
-      let char = sentence.charAt(i);
+    for (let i = 0; i < rawSentence.length; i++) {
+      let char = rawSentence.charAt(i);
 
       if (!processingAnswer && char === '*') {
+        // End of a sentence segment
+        if (ongoingSentenceSegment.length !== 0) {
+          let sentenceSegment = ongoingSentenceSegment.join('');
+          sentence.push({value: sentenceSegment, answer: false});
+          ongoingSentenceSegment = [];
+        }
         // Start of a new answer
         processingAnswer = true;
       } else if (processingAnswer && char === '*') {
         // Finished current answer
         let answer = ongoingAnswer.join('');
         answer = answer.trim();
-        answers.push(answer);
-				ongoingAnswer = [];
+        sentence.push({value: answer, answer: true});
+        ongoingAnswer = [];
         processingAnswer = false;
       } else if (processingAnswer) {
         // Add to current answer
         ongoingAnswer.push(char);
+      } else {
+        // Add to sentence segment
+        ongoingSentenceSegment.push(char);
       }
     }
 
-    return answers;
+    return sentence;
   }
 
 }
