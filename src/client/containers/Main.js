@@ -12,10 +12,12 @@ class Main extends Component {
       sentences: [], // Bank of sentences
       completedSentences: {}, // Ongoing list of completed sentences
 
+      sentenceIndex: false, // Index of current sentence
       sentence: [], // Current sentence broken down
       gifs: {}, // Gifs for the current sentence
 
       input: {}, // Input from the user
+      focus: false, // Index of answer to focus
       submitted: false, // Flag that user has submitted their guesses
       score: 0, // Score of the user
       maxScore: 0 // Max possible score so far
@@ -36,7 +38,6 @@ class Main extends Component {
 
   render() {
     // Focus on the first answer for input
-    let focus = true;
     let segmentElements = this.state.sentence.map((segment, index) => {
       let value = ''
       if (this.state.input.hasOwnProperty(index)) {
@@ -45,16 +46,15 @@ class Main extends Component {
 
       if (segment.answer) {
         let element = <Answer
-          key={index}
+          key={this.state.sentenceIndex + '_' + index}
           index={index}
           gif={this.state.gifs[index]}
           answer={segment.value}
           value={value}
           correct={segment.correct}
           submitted={this.state.submitted}
-          focus={focus}
+          focus={this.state.focus === index}
           handler={this.updateInputValue}/>;
-        focus = false;
         return element;
       } else {
         return <Segment key={index} index={index} segment={segment.value}/>;
@@ -66,9 +66,9 @@ class Main extends Component {
         {segmentElements}
         <button onClick={() => this.checkAnswers()} disabled={this.state.submitted}>Submit</button>
         <button onClick={() => this.setNextSentence()}>Next</button>
-				<div>
-					<p>Score: {this.state.score}/{this.state.maxScore}</p>
-				</div>
+        <div>
+          <p>Score: {this.state.score}/{this.state.maxScore}</p>
+        </div>
       </div>
     );
   }
@@ -95,14 +95,22 @@ class Main extends Component {
       completedSentences: {
         ...this.state.completedSentences,
         [randomIndex]: true
-      }
+      },
+      sentenceIndex: randomIndex
     })
 
     let sentence = this.parseSentenceAndAnswers(this.state.sentences[randomIndex].sentence);
     this.setState({sentence: sentence});
 
+    let focus = true;
     sentence.forEach((segment, index) => {
       if (segment.answer) {
+        // Set focus on first answer
+        if (focus) {
+          this.setState({focus: index});
+          focus = false;
+        }
+
         fetch('https://api.giphy.com/v1/stickers/translate?api_key=dyifQG9fALzqJM17T37Di8ifZ6nM5aek&s=' + segment.value).then(
           response => response.json()
         ).then(json => {
@@ -143,7 +151,21 @@ class Main extends Component {
         ...this.state.input,
         [index]: value
       }
-    })
+    });
+
+    // Move focus if there is another answer - Else focus submit (true)
+    focus = index
+    if (value.length === this.state.sentence[index].value.length) {
+      focus = true;
+      for (let i = index + 1; i < this.state.sentence.length; i++) {
+        if (this.state.sentence[i].answer) {
+          focus = i;
+          break;
+        }
+      }
+
+    }
+    this.setState({focus: focus});
   }
 
   // Check answers on submission
@@ -160,15 +182,15 @@ class Main extends Component {
       sentence[index].correct = correct;
     });
 
-		let answers = this.state.sentence.filter(segment => {
-			return segment.answer
-		});
+    let answers = this.state.sentence.filter(segment => {
+      return segment.answer
+    });
 
     this.setState({
       sentence: sentence,
       submitted: true,
       score: this.state.score + points,
-			maxScore: this.state.maxScore + answers.length
+      maxScore: this.state.maxScore + answers.length
     });
   }
 }

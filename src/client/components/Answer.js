@@ -7,6 +7,12 @@ class Answer extends Component {
     }
   }
 
+  componentDidUpdate() {
+    if (this.props.focus) {
+      this.input.focus();
+    }
+  }
+
   render() {
     let correct = null;
     let readOnly = false;
@@ -26,6 +32,8 @@ class Answer extends Component {
           id={'answer-' + this.props.index}
           value={this.props.value}
           onChange={e => this.props.handler(this.props.index, e.target.value)}
+          maxLength={this.props.answer.length}
+          size={this.props.answer.length}
           readOnly={this.props.submitted}></input>
         {correct}
       </div>
