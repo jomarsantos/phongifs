@@ -17,9 +17,9 @@ class Answer extends Component {
     let correct = null;
     let readOnly = false;
     if (this.props.correct) {
-      correct = 'correct'
+      correct = '✓'
     } else if (this.props.submitted) {
-      correct = this.props.answer
+      correct = '✖ '+this.props.answer
     }
 
     return (

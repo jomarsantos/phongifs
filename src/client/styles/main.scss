@@ -1,9 +1,11 @@
 // General
+$mainColor: #28a693;
 $white: #FFFFFF;
+$disabledColor: #195350;
 
 html {
   font-family: 'Roboto Slab', serif;
-  background-color: #28a693;
+  background-color: $mainColor;
   color: $white;
 }
 
@@ -36,10 +38,10 @@ html {
     border-bottom: 3px solid $white;
     font-family: 'Roboto Slab', serif;
     font-size: 32px;
-    color: darken($white, 0.9)
+    color: $white;
   }
 
-  input:focus{
+  input:focus {
     outline: none;
   }
 }
@@ -47,6 +49,29 @@ html {
 #buttons {
   display: block;
   text-align: center;
+  margin-top: 20px;
+
+  button {
+    margin: 2px;
+    font-family: 'Roboto Slab', serif;
+    color: $white;
+    font-size: 16px;
+    border: 0;
+    background: lighten($mainColor, 10%);
+    height: 50px;
+    width: 100px;
+    cursor: pointer;
+  }
+
+  button:hover, button:focus {
+    outline: none;
+    background: darken($mainColor, 10%);
+  }
+
+  button:disabled {
+    color: darken($mainColor, 5%);
+    background: darken($mainColor, 2%);
+  }
 }
 
 #score {
