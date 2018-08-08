@@ -25,6 +25,7 @@ class Main extends Component {
 
     this.setNextSentence = this.setNextSentence.bind(this);
     this.updateInputValue = this.updateInputValue.bind(this);
+    this.handleKeyDown = this.handleKeyDown.bind(this);
     this.checkAnswers = this.checkAnswers.bind(this);
   }
 
@@ -46,7 +47,7 @@ class Main extends Component {
 
       if (segment.answer) {
         let element = <Answer
-          key={this.state.sentenceIndex + '_' + index}
+          key={this.state.sentenceIndex + '-' + index}
           index={index}
           gif={this.state.gifs[index]}
           answer={segment.value}
@@ -54,7 +55,8 @@ class Main extends Component {
           correct={segment.correct}
           submitted={this.state.submitted}
           focus={this.state.focus === index}
-          handler={this.updateInputValue}/>;
+          onChangeHandler={this.updateInputValue}
+          onKeyDownHandler={this.handleKeyDown}/>;
         return element;
       } else {
         return <Segment key={index} index={index} segment={segment.value}/>;
@@ -163,9 +165,25 @@ class Main extends Component {
           break;
         }
       }
-
     }
     this.setState({focus: focus});
+  }
+
+  // Handler for key pressed, mainly backspace handling
+  handleKeyDown(index, keyCode) {
+    if (keyCode === 8) {
+      // Move focus to a previous answer
+      let focus = index
+      if (this.state.input[index] === undefined || this.state.input[index].length == 0) {
+        for (let i = index - 1; i >= 0; i--) {
+          if (this.state.sentence[i].answer) {
+            focus = i;
+            break;
+          }
+        }
+      }
+      this.setState({focus: focus});
+    }
   }
 
   // Check answers on submission

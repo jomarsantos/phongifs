@@ -31,7 +31,8 @@ class Answer extends Component {
           }}
           id={'answer-' + this.props.index}
           value={this.props.value}
-          onChange={e => this.props.handler(this.props.index, e.target.value)}
+          onChange={e => this.props.onChangeHandler(this.props.index, e.target.value)}
+          onKeyDown={e => this.props.onKeyDownHandler(this.props.index, e.keyCode)}
           maxLength={this.props.answer.length}
           size={this.props.answer.length}
           readOnly={this.props.submitted}></input>
