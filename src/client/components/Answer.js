@@ -23,7 +23,7 @@ class Answer extends Component {
     }
 
     return (
-      <div id={'segment-' + this.props.index}>
+      <div id={'segment-' + this.props.index} className={this.props.className}>
         <img src={this.props.gif}></img>
         <input
           ref={(input) => {

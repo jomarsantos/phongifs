@@ -1,10 +1,54 @@
 // General
-$green: #374e2b;
+$white: #FFFFFF;
 
-div {
-  color: $green
+html {
+  font-family: 'Roboto Slab', serif;
+  background-color: #28a693;
+  color: $white;
 }
 
-input {
+#sentence {
+  text-align: center;
+  align-items: center;
+}
 
+.segment {
+  font-size: 32px;
+  display: inline-block;
+}
+
+.answer {
+  display: inline-block;
+  text-align: center;
+  padding: 10px;
+
+  img {
+    display: block;
+    margin: 0 auto;
+  }
+
+  input {
+    display: block;
+    margin: 0 auto;
+    text-align: center;
+    background: transparent;
+    border: none;
+    border-bottom: 3px solid $white;
+    font-family: 'Roboto Slab', serif;
+    font-size: 32px;
+    color: darken($white, 0.9)
+  }
+
+  input:focus{
+    outline: none;
+  }
+}
+
+#buttons {
+  display: block;
+  text-align: center;
+}
+
+#score {
+  text-align: center;
 }

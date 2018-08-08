@@ -5,7 +5,6 @@ import Answer from '../components/Answer';
 import Segment from '../components/Segment';
 import Button from '../components/Button';
 
-
 class Main extends Component {
   constructor(props) {
     super(props);
@@ -49,6 +48,7 @@ class Main extends Component {
 
       if (segment.answer) {
         let element = <Answer
+          className='answer'
           key={this.state.sentenceIndex + '-' + index}
           index={index}
           gif={this.state.gifs[index]}
@@ -61,16 +61,28 @@ class Main extends Component {
           onKeyDownHandler={this.handleKeyDown}/>;
         return element;
       } else {
-        return <Segment key={index} index={index} segment={segment.value}/>;
+        return <Segment className='segment' key={index} index={index} segment={segment.value}/>;
       }
     });
 
     return (
-      <div>
-        {segmentElements}
-        <Button text='Submit' onClickHandler={this.checkAnswers} disabled={this.state.submitted} focus={this.state.focus === 'submit'} />
-        <Button text='Next' onClickHandler={this.setNextSentence} disabled={!this.state.submitted} focus={this.state.focus === 'next'} />
-        <div>
+      <div id='main'>
+        <div id="sentence">
+          {segmentElements}
+        </div>
+        <div id='buttons'>
+          <Button
+            text='Submit'
+            onClickHandler={this.checkAnswers}
+            disabled={this.state.submitted}
+            focus={this.state.focus === 'submit'}/>
+          <Button
+            text='Next'
+            onClickHandler={this.setNextSentence}
+            disabled={!this.state.submitted}
+            focus={this.state.focus === 'next'}/>
+        </div>
+        <div id='score'>
           <p>Score: {this.state.score}/{this.state.maxScore}</p>
         </div>
       </div>
