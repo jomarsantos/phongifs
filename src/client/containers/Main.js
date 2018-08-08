@@ -3,6 +3,8 @@ import {connect} from 'react-redux'
 import {testFetchAction, testAction} from '../actions/test';
 import Answer from '../components/Answer';
 import Segment from '../components/Segment';
+import Button from '../components/Button';
+
 
 class Main extends Component {
   constructor(props) {
@@ -66,8 +68,8 @@ class Main extends Component {
     return (
       <div>
         {segmentElements}
-        <button onClick={() => this.checkAnswers()} disabled={this.state.submitted}>Submit</button>
-        <button onClick={() => this.setNextSentence()}>Next</button>
+        <Button text='Submit' onClickHandler={this.checkAnswers} disabled={this.state.submitted} focus={this.state.focus === 'submit'} />
+        <Button text='Next' onClickHandler={this.setNextSentence} disabled={!this.state.submitted} focus={this.state.focus === 'next'} />
         <div>
           <p>Score: {this.state.score}/{this.state.maxScore}</p>
         </div>
@@ -158,7 +160,7 @@ class Main extends Component {
     // Move focus if there is another answer - Else focus submit (true)
     focus = index
     if (value.length === this.state.sentence[index].value.length) {
-      focus = true;
+      focus = 'submit';
       for (let i = index + 1; i < this.state.sentence.length; i++) {
         if (this.state.sentence[i].answer) {
           focus = i;
@@ -208,7 +210,8 @@ class Main extends Component {
       sentence: sentence,
       submitted: true,
       score: this.state.score + points,
-      maxScore: this.state.maxScore + answers.length
+      maxScore: this.state.maxScore + answers.length,
+      focus: 'next'
     });
   }
 }
