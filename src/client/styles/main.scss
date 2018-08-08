@@ -44,6 +44,18 @@ html {
   input:focus {
     outline: none;
   }
+
+  p.result {
+    font-size: 32px;
+  }
+
+  p.correct {
+    color: #5ad78c;
+  }
+
+  p.incorrect {
+    color: #e8806d;
+  }
 }
 
 #buttons {

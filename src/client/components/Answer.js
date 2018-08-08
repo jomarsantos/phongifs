@@ -19,7 +19,7 @@ class Answer extends Component {
     if (this.props.correct) {
       correct = '✓'
     } else if (this.props.submitted) {
-      correct = '✖ '+this.props.answer
+      correct = this.props.answer
     }
 
     return (
@@ -36,7 +36,9 @@ class Answer extends Component {
           maxLength={this.props.answer.length}
           size={this.props.answer.length}
           readOnly={this.props.submitted}></input>
-        {correct}
+        <p className={'result ' + (this.props.correct ? 'correct' : 'incorrect')}>
+          {correct}
+        </p>
       </div>
     );
   }
